@@ -1,7 +1,7 @@
 <template>
     <div >
         <header>
-            <img width="300" src="../images/logo_fairy_trip.png" alt="logo"/>
+            <img width="300" src="../images/fairy_trip_logo.png" alt="logo"/>
             <p class="admin">Admin</p>
             <p class="logout">Вийти</p>
         </header>
