@@ -6,6 +6,7 @@
                 <v-combobox
                         v-model="select"
                         class="text-field"
+
                         :items="items"
                         solo
                         height=""

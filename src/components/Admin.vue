@@ -11,9 +11,10 @@
                         append-icon="search"
                 ></v-text-field>
             <v-combobox
-                    v-model="select"
 
                     :items="items"
+                    item-text="title"
+                    v-model="select"
                     class="search"
                     solo
                     height=""
@@ -57,6 +58,7 @@
                     <p>Опис: {{ commodity.characteristic }}</p>
                 </div>
             </div>
+            <div>{{ this.commodities[1] }}</div>
         </div>
 
 
@@ -69,21 +71,23 @@
         data () {
             return {
                 items: [
-                    'Усі товари',
-                    'Взуття',
-                    'Одяг',
-                    'Палатки',
-                    'Спальні мішки',
-                    'Посуд',
-                    'Харчування',
-                    'Рюкзаки',
-                    'Спорядження',
+                    {title: 'Усі товари', path: '/commodities'},
+                    {title: 'Взуття', path: '/shoes'},
+                    {title: 'Одяг', path: '/clothes'},
+                    {title: 'Палатки', path: '/tents'},
+                    {title: 'Спальні мішки', path: '/sleeping_bag'},
+                    {title: 'Посуд', path: '/dishes'},
+                    {title: 'Харчування', path: '/food'},
+                    {title: 'Рюкзаки', path: '/backpacks'},
+                    {title: 'Спорядження', path: '/equipment'}
                 ],
                 right: null,
                 commodities: [],
-                select: this.select_comm,
+                select: {title: this.select_comm},
                 page: 'main',
-                url: 'butterfly.jpg'
+                url: 'butterfly.jpg',
+                id: null,
+                commodityPath: '/commodities'
             }
         },
         props: {
@@ -91,19 +95,29 @@
         },
         watch: {
             select_comm(){
-                this.select = this.select_comm;
+                this.select = { title: this.select_comm};
+                for(let i = 0; i < this.items.length; i++)
+                    if(this.select.title == this.items[i].title)
+                        this.commodityPath = this.items[i].path;
+                //console.log(this.commodityPath);
             },
-            select(val) {
-                this.$emit('changeItem', val);
+            select() {
+                this.$emit('changeItem', this.select.title);
             }
+
+        },
+        created () {
+
+
         },
         mounted () {
             this.scroll();
             axios({
-                url: 'http://localhost:8080/commodity/shoes',
+                url: 'http://localhost:8080' + this.commodityPath,
                 method: 'get'
-            }).then((response)=> (this.commodities = response.data));
+            }).then((response)=> (this.commodities = response.data, console.log(response.data)));
             //this.commodities.id = this.info[0].shoesId;
+
         },
         methods: {
 
