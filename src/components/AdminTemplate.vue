@@ -5,8 +5,8 @@
             <p class="admin">Admin</p>
             <p class="logout">Вийти</p>
         </header>
-        <admin-home @changePage="page='add'" v-if="page=='main'" :select_comm=select @changeItem="select = $event"></admin-home>
-        <admin-add @changePage="page = $event" :select_comm="select" v-else></admin-add>
+        <admin-home @changePage="page='add'" v-if="page=='main'" :select_comm=select :get_comm = "isMain" @changeItem="select = $event"></admin-home>
+        <admin-add @changePage="page = $event, isMain = true" :select_comm="select" v-else></admin-add>
 
 
             <v-navigation-drawer
@@ -63,7 +63,8 @@
                 ],
 
                 select: 'Усі товари',
-                page: 'main'
+                page: 'main',
+                isMain: false
             }
         },
         components: {

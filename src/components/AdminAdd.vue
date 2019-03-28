@@ -248,7 +248,7 @@
                         axios.request({
 
                             method: 'POST',
-                            url: "http://localhost:8080/commodity" + path,
+                            url: "http://localhost:8080" + path,
                             headers: {'Content-Type': "multipart/form-data"},
                             transformRequest: function () {
                                 let formData = new FormData();

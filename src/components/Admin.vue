@@ -24,7 +24,7 @@
                     <v-icon medium color="black">add</v-icon>
                     <div class="show_text">Додати</div>
                 </button>
-                <button  class="icon" >
+                <button @click="deleteById()" class="icon" >
                     <v-icon medium color="black">remove</v-icon>
                     <div class="show_text">Видалити</div>
                 </button>
@@ -36,10 +36,10 @@
         </div>
 
         <div class="commodities">
-            <div class="commodity"  v-for="commodity in commodities" :key="commodity.shoesId">
+            <div class="commodity"  v-for="(commodity, index) in commodities" :key="commodity.id + commodity.name" :id="index" @click="selectCommodity(index)">
                 <div class="commodity_id">
                     <p>ID: </p>
-                    <p>{{ commodity.shoesId }}</p>
+                    <p>{{ commodity.id }}</p>
                 </div>
                 <div class="commodity_img">
                     <img width="120" height="80" :src="getImgUrl()" />
@@ -58,7 +58,6 @@
                     <p>Опис: {{ commodity.characteristic }}</p>
                 </div>
             </div>
-            <div>{{ this.commodities[1] }}</div>
         </div>
 
 
@@ -86,12 +85,16 @@
                 select: {title: this.select_comm},
                 page: 'main',
                 url: 'butterfly.jpg',
-                id: null,
-                commodityPath: '/commodities'
+                id: [],
+                commodityPath: '/commodities',
+                commIsActive: false,
+                selectedIndex: null,
+                mas: []
             }
         },
         props: {
-            'select_comm': String
+            'select_comm': String,
+            'get_comm' : Boolean
         },
         watch: {
             select_comm(){
@@ -99,11 +102,22 @@
                 for(let i = 0; i < this.items.length; i++)
                     if(this.select.title == this.items[i].title)
                         this.commodityPath = this.items[i].path;
-                //console.log(this.commodityPath);
+                this.sendRequest();
+                if(this.selectedIndex != null){
+                    let id = document.getElementById(this.selectedIndex);
+                    id.classList.remove("commodity_active");
+                    this.commIsActive = false;
+                    this.selectedIndex = null;
+                }
+
             },
             select() {
                 this.$emit('changeItem', this.select.title);
+            },
+            get_comm() {
+                this.sendRequest();
             }
+
 
         },
         created () {
@@ -112,18 +126,67 @@
         },
         mounted () {
             this.scroll();
-            axios({
-                url: 'http://localhost:8080' + this.commodityPath,
-                method: 'get'
-            }).then((response)=> (this.commodities = response.data, console.log(response.data)));
-            //this.commodities.id = this.info[0].shoesId;
-
+            this.sendRequest();
         },
         methods: {
+            selectCommodity(index) {
+                let id = document.getElementById(index);
+                if(!this.commIsActive) {
+                    if(this.selectedIndex == null) {
+                        id.classList.add("commodity_active");
+                        this.commIsActive = true;
+                        this.selectedIndex = index;
+                        //console.log(this.commodities[index].id, this.mas[index]);
+                    }
+                }
+                else {
+                    if(this.selectedIndex == index) {
+                        id.classList.remove("commodity_active");
+                        this.commIsActive = false;
+                        this.selectedIndex = null;
+                    }
+                    if(this.selectedIndex != index && this.selectedIndex != null) {
+                        let prevId = document.getElementById(this.selectedIndex);
+                        prevId.classList.remove("commodity_active");
+                        id.classList.add("commodity_active");
+                        this.commIsActive = true;
+                        this.selectedIndex = index;
+                        //console.log(this.commodities[index].id, this.mas[index]);
+                    }
+                }
+            },
+            sendRequest() {
+                if(this.select.title == this.items[0].title)
+                    this.commodityPath = this.items[0].path;
+                if(this.commodityPath == '/commodities'){
+                    axios({
+                        url: 'http://localhost:8080' + this.commodityPath,
+                        method: 'get'
+                    }).then((response) => ( this.commodities = this.fillCommodity(response.data)));
 
+                }
+                else {
+                    axios({
+                        url: 'http://localhost:8080' + this.commodityPath,
+                        method: 'get'
+                    }).then((response) => (this.commodities = response.data));
+                }
+            },
+            fillCommodity(commodityData){
+                let z = 0;
+                let comm = [];
+                for(let i = 0; i < commodityData.length; i++){
+                    for (let j = 0; j < commodityData[i].length; j++) {
+                        comm[z] = commodityData[i][j];
+                        this.mas[z] = this.items[i+1].title;
+                        //console.log(this.mas[z]);
+                        z++;
+                    }
+                }
+                return comm;
+            },
             scroll() {
                 const self = this;
-                //console.log(this.page);
                 if (this.page == 'main') {
                     window.onscroll = function() {
                         self.fix_tools()
@@ -149,7 +212,30 @@
                 this.$emit('changePage');
                 this.page = 'add';
                 this.scroll();
-            }
+            },
+            deleteById() {
+                if(this.selectedIndex != null) {
+                    if (confirm("Ви точно хочете видалити даний запис?")) {
+                        let id = this.commodities[this.selectedIndex].id;
+                        if (this.select.title == this.items[0].title) {
+                            for (let i = 0; i < this.items.length; i++) {
+                                if (this.items[i].title == this.mas[this.selectedIndex]) {
+                                    this.commodityPath = this.items[i].path
+
+                                }
+                            }
+                        }
+                        //console.log(id + ' ' + this.commodityPath);
+                        axios({
+                            url: 'http://localhost:8080' + this.commodityPath + "/" + id,
+                            method: 'delete'
+                        }).then((response) => {
+                            console.log(response), this.sendRequest();
+                        });
+                    }
+                }
+
+            },
         }
     }
 </script>
@@ -186,6 +272,14 @@
         margin-top: 10px;
         box-shadow: 0px 0px 4px rgba(.2,.2,.2,.2);
         height: 100px;
+    }
+    .commodity_active {
+        background-color: #55d5fe;
+    }
+    .commodity:hover {
+
+        box-shadow: 0px 0px 4px rgba(.255,.255,.255,.5) ;
+        border: #55d5fe 1px solid;
     }
     .tools {
         margin: 10px;
