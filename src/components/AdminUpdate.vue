@@ -226,7 +226,7 @@
                                  formData.append("file", file);
                                  return formData;
                               }
-                     });
+                     }).then(() => { console.log()});
                      this.$emit('changePage', 'main');
 
                  }else alert("Заповніть усі поля!");
