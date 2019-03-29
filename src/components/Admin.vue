@@ -28,7 +28,7 @@
                     <v-icon medium color="black">remove</v-icon>
                     <div class="show_text">Видалити</div>
                 </button>
-                <button  class="icon">
+                <button @click="updateById()" class="icon">
                     <v-icon medium color="black">edit</v-icon>
                     <div class="show_text">Редагувати</div>
                 </button>
@@ -42,7 +42,7 @@
                     <p>{{ commodity.id }}</p>
                 </div>
                 <div class="commodity_img">
-                    <img width="120" height="80" :src="getImgUrl()" />
+                    <img width="120" height="80" :src="'http://localhost:8080' + commodity.imagePath" />
                 </div>
                 <div class="commodity_title">
                     <p>Назва товару: {{ commodity.name }}</p>
@@ -93,8 +93,7 @@
             }
         },
         props: {
-            'select_comm': String,
-            'get_comm' : Boolean
+            'select_comm': String
         },
         watch: {
             select_comm(){
@@ -113,20 +112,26 @@
             },
             select() {
                 this.$emit('changeItem', this.select.title);
-            },
-            get_comm() {
-                this.sendRequest();
             }
 
 
         },
         created () {
-
-
+            for(let i = 0; i < this.items.length; i++){
+                if(this.select_comm == this.items[i].title)
+                    this.commodityPath = this.items[i].path;
+            }
+            this.sendRequest();
         },
         mounted () {
+
             this.scroll();
+            for(let i = 0; i < this.items.length; i++){
+                if(this.select_comm == this.items[i].title)
+                    this.commodityPath = this.items[i].path;
+            }
             this.sendRequest();
+
         },
         methods: {
             selectCommodity(index) {
@@ -136,7 +141,6 @@
                         id.classList.add("commodity_active");
                         this.commIsActive = true;
                         this.selectedIndex = index;
-                        //console.log(this.commodities[index].id, this.mas[index]);
                     }
                 }
                 else {
@@ -160,14 +164,14 @@
                     this.commodityPath = this.items[0].path;
                 if(this.commodityPath == '/commodities'){
                     axios({
-                        url: 'http://localhost:8080' + this.commodityPath,
+                        url: 'http://localhost:8080/fairy-trip' + this.commodityPath,
                         method: 'get'
                     }).then((response) => ( this.commodities = this.fillCommodity(response.data)));
 
                 }
                 else {
                     axios({
-                        url: 'http://localhost:8080' + this.commodityPath,
+                        url: 'http://localhost:8080/fairy-trip' + this.commodityPath,
                         method: 'get'
                     }).then((response) => (this.commodities = response.data));
                 }
@@ -209,9 +213,25 @@
                 return require('../images/'+this.url)
             },
             add() {
-                this.$emit('changePage');
+                this.$emit('changeAddPage');
                 this.page = 'add';
                 this.scroll();
+            },
+            updateById() {
+                if(this.selectedIndex != null) {
+                    let id = this.commodities[this.selectedIndex].id;
+                    if (this.select.title == this.items[0].title) {
+                        for (let i = 0; i < this.items.length; i++) {
+                            if (this.items[i].title == this.mas[this.selectedIndex])
+                                this.commodityPath = this.items[i].path;
+                        }
+                    }
+                    this.$emit('setCommodity', this.commodities[this.selectedIndex]);
+                    this.$emit('setId', id);
+                    this.$emit('changeUpdatePage', this.commodityPath);
+                    this.page = 'update';
+                    this.scroll();
+                }
             },
             deleteById() {
                 if(this.selectedIndex != null) {
@@ -219,15 +239,13 @@
                         let id = this.commodities[this.selectedIndex].id;
                         if (this.select.title == this.items[0].title) {
                             for (let i = 0; i < this.items.length; i++) {
-                                if (this.items[i].title == this.mas[this.selectedIndex]) {
-                                    this.commodityPath = this.items[i].path
-
-                                }
+                                if (this.items[i].title == this.mas[this.selectedIndex])
+                                    this.commodityPath = this.items[i].path;
                             }
                         }
                         //console.log(id + ' ' + this.commodityPath);
                         axios({
-                            url: 'http://localhost:8080' + this.commodityPath + "/" + id,
+                            url: 'http://localhost:8080/fairy-trip' + this.commodityPath + "/" + id,
                             method: 'delete'
                         }).then((response) => {
                             console.log(response), this.sendRequest();

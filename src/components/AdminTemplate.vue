@@ -5,8 +5,25 @@
             <p class="admin">Admin</p>
             <p class="logout">Вийти</p>
         </header>
-        <admin-home @changePage="page='add'" v-if="page=='main'" :select_comm=select :get_comm = "isMain" @changeItem="select = $event"></admin-home>
-        <admin-add @changePage="page = $event, isMain = true" :select_comm="select" v-else></admin-add>
+        <admin-home @changeAddPage="page='add'"
+                    @changeUpdatePage="page='update', path=$event"
+                    v-if="page=='main'"
+                    :select_comm=select
+                    @changeItem="select = $event"
+
+                    @setCommodity="commodity = $event"
+        ></admin-home>
+        <admin-add @changePage="page = $event"
+                   :select_comm="select"
+                   v-if="page=='add'"
+        ></admin-add>
+        <admin-update @changePage="page = $event"
+
+                      :updatedPath="path"
+                      :updatedCommodity="commodity"
+                      :select_comm="select"
+                      v-if="page=='update'"
+        ></admin-update>
 
 
             <v-navigation-drawer
@@ -46,7 +63,8 @@
 
 <script>
     import Admin from './Admin';
-    import AdminAdd from './AdminAdd'
+    import AdminAdd from './AdminAdd';
+    import AdminUpdate from './AdminUpdate'
     export default {
         data () {
             return {
@@ -64,15 +82,20 @@
 
                 select: 'Усі товари',
                 page: 'main',
-                isMain: false
+                path: '',
+                commodity: {}
             }
         },
         components: {
             'admin-home': Admin,
-            'admin-add': AdminAdd
+            'admin-add': AdminAdd,
+            'admin-update': AdminUpdate
         },
 
         methods: {
+
+        },
+        watch: {
 
         }
     }

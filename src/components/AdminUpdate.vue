@@ -1,21 +1,11 @@
 <template>
     <div>
-        <div  :class="{add_form: true, form_height: isActive}">
-            <div class="category" v-if="select_comm=='Усі товари'">
-                <label>Категорія: </label>
-                <v-combobox
-                        v-model="select"
-                        class="text-field"
-
-                        :items="items"
-                        solo
-                        height=""
-                ></v-combobox>
-            </div>
+        <div  :class="{add_form: true}">
+            <div class="id_div">ID: {{ updatedCommodity.id }}</div>
             <div class="image" @click="$refs.inputUpload.click()">
                 <input v-show="false" ref="inputUpload" type="file" accept=".jpg, .jpeg, .png" @change="onFileChange" />
                 <img width="300" height="200" v-if="url" :src="url" />
-                <p style="text-align: center; margin-top: 80px; font-size: 16px" v-else>Оберіть зображення</p>
+                <p style="text-align: center; margin-top: 80px; font-size: 16px" v-else>Оберіть ghhgjg зображення</p>
             </div>
             <div class="important">
                 <label>Назва товару: </label>
@@ -50,10 +40,10 @@
                 <label>Розміри: </label>
                 <div class="text-field">
                     <v-text-field v-if="select!='Одяг' && select!='Взуття'"
-                            v-model="commodity_size"
-                            :rules="[rules.required]"
-                            solo
-                            type="text"
+                                  v-model="commodity_size"
+                                  :rules="[rules.required]"
+                                  solo
+                                  type="text"
                     ></v-text-field>
                     <v-combobox
                             v-model="commodity_sizes"
@@ -113,15 +103,15 @@
                 <label>Опис товару: </label>
                 <div>
                     <v-textarea height="250" rows="13" class="text"
-                            v-model="commodity_data.characteristic"
-                            :rules="[rules.required]"
-                            solo
-                            type="text"
+                                v-model="commodity_data.characteristic"
+                                :rules="[rules.required]"
+                                solo
+                                type="text"
                     ></v-textarea>
 
                 </div>
             </div>
-            <v-btn class="success button add_btn" @click="add_commodity()">Додати товар</v-btn>
+            <v-btn class="success button add_btn" @click="update_commodity()">Змінити товар</v-btn>
             <v-btn class="error button cancel" @click="cancel()">Відмінити</v-btn>
         </div>
     </div>
@@ -133,41 +123,51 @@
         data () {
             return {
                 file: null,
-                url: null,
+                url: "http://localhost:8080" + this.updatedCommodity.imagePath,
                 sizes: [],
-                radioGroup: null,
+                radioGroup: this.chooseSex(),
                 sex: ["Чоловіча", "Жіноча", "Унісекс"],
                 rules: {
                     required: value => !!value || 'Заповніть поле.',
                 },
                 select: 'Взуття',
                 items: [
-                    'Взуття',
-                    'Одяг',
-                    'Палатки',
-                    'Спальні мішки',
-                    'Посуд',
-                    'Харчування',
-                    'Рюкзаки',
-                    'Спорядження',
+                    {title: 'Усі товари', path: '/commodities'},
+                    {title: 'Взуття', path: '/shoes'},
+                    {title: 'Одяг', path: '/clothes'},
+                    {title: 'Палатки', path: '/tents'},
+                    {title: 'Спальні мішки', path: '/sleeping_bag'},
+                    {title: 'Посуд', path: '/dishes'},
+                    {title: 'Харчування', path: '/food'},
+                    {title: 'Рюкзаки', path: '/backpacks'},
+                    {title: 'Спорядження', path: '/equipment'}
                 ],
-                isActive: true,
                 commodity_data: {
-                    name: null,
-                    brand: null,
-                    price: null,
-                    characteristic: null
+                    name: this.updatedCommodity.name,
+                    brand: this.updatedCommodity.brand,
+                    price: this.updatedCommodity.price,
+                    characteristic: this.updatedCommodity.characteristic
                 },
-                commodity_size: null,
-                commodity_sizes: [],
-                commodity_weight: null,
-                commodity_material: null,
+                commodity_size: this.updatedCommodity.size,
+                commodity_sizes: this.updatedCommodity.sizes,
+                commodity_weight: this.updatedCommodity.weight,
+                commodity_material: this.updatedCommodity.material,
             }
         },
         props: {
-            select_comm: String
+            select_comm: String,
+            updatedPath: String,
+            updatedCommodity: Object
         },
         methods: {
+            chooseSex(){
+                let sex = ["Чоловіча", "Жіноча", "Унісекс"];
+                for(let i = 0; i < sex.length; i++){
+                    if(sex[i] == this.updatedCommodity.sex)
+                        return i+1;
+                }
+                return null;
+            },
             onFileChange(e) {
                 try {
                     this.file = e.target.files[0];
@@ -180,9 +180,10 @@
             cancel() {
                 this.$emit('changePage', 'main');
             },
-            add_commodity() {
+            update_commodity() {
+                //console.log(this.updatedId);
+                //console.log(this.updatedPath);
                 let data = this.commodity_data;
-                let path = '';
                 let isCorrect = true;
 
                 if(data.characteristic == null || data.price == null || data.name == null || data.brand == null)
@@ -213,86 +214,54 @@
                         }
                     }
                 }
-                if(isCorrect) {
-                    switch (this.select) {
-                        case this.items[0]:
-                            path = '/shoes/new_shoes';
-                            break;
-                        case this.items[1]:
-                            path = '/clothes/new_clothes';
-                            break;
-                        case this.items[2]:
-                            path = '/tent/new_tent';
-                            break;
-                        case this.items[3]:
-                            path = '/sleeping_bag/new_sleeping_bag';
-                            break;
-                        case this.items[4]:
-                            path = '/dishes/new_dishes';
-                            break;
-                        case this.items[5]:
-                            path = '/food/new_food';
-                            break;
-                        case this.items[6]:
-                            path = '/backpack/new_backpack';
-                            break;
-                        case this.items[7]:
-                            path = '/equipment/new_equipment';
-                            break;
-                    }
+                 if(isCorrect) {
+                     let file = this.file;
+                     axios.request({
+                         method: 'PUT',
+                         url: "http://localhost:8080/fairy-trip" + this.updatedPath + "/" + this.updatedCommodity.id,
+                         headers: {'Content-Type': "multipart/form-data"},
+                             transformRequest: function () {
+                                 let formData = new FormData();
+                                 formData.append("json", JSON.stringify(data));
+                                 formData.append("file", file);
+                                 return formData;
+                              }
+                     });
+                     this.$emit('changePage', 'main');
 
-                    // eslint-disable-next-line
-                    //console.log(data);
-
-                        let file = this.file;
-                        axios.request({
-
-                            method: 'POST',
-                            url: "http://localhost:8080/fairy-trip" + path,
-                            headers: {'Content-Type': "multipart/form-data"},
-                            transformRequest: function () {
-                                let formData = new FormData();
-                                formData.append("json", JSON.stringify(data));
-                                formData.append("file", file);
-                                return formData;
-                            }
-                        }
-                    );
-                        this.$emit('changePage', 'main');
-                }else alert("Заповніть усі поля!");
-            }
+                 }else alert("Заповніть усі поля!");
+             }
         },
         mounted() {
+            //console.log(this.updatedCommodity.imagePath);
+
             if(this.select_comm!='Усі товари') {
                 this.select = this.select_comm;
-                this.isActive = false
             }
-            this.sizes.splice(0, this.sizes.length);
-            for (let i = 35; i < 48; i++)
-                this.sizes.push(i);
+            else {
+                for(let i = 0; i < this.items.length; i++)
+                    if(this.items[i].path == this.updatedPath)
+                        this.select = this.items[i].title;
+            }
+            if(this.select_comm=='Одяг'){
+                this.sizes.splice(0, this.sizes.length);
+                this.sizes.push('XS');
+                this.sizes.push('S');
+                this.sizes.push('M');
+                this.sizes.push('L');
+                this.sizes.push('XL');
+                this.sizes.push('XXL');
+            }
+            else {
+                this.sizes.splice(0, this.sizes.length);
+                for (let i = 35; i < 48; i++)
+                    this.sizes.push(i);
+            }
+
         },
         watch: {
             select_comm() {
-                if(this.select_comm!='Усі товари') {
-                    this.select = this.select_comm;
-                    this.isActive = false
-                }
-
-                else this.isActive = true;
-                if(this.select_comm=='Одяг'){
-                    this.sizes.splice(0, this.sizes.length);
-                    this.sizes.push('XS');
-                    this.sizes.push('S');
-                    this.sizes.push('M');
-                    this.sizes.push('L');
-                    this.sizes.push('XL');
-                    this.sizes.push('XXL');
-                }
-                else {
-                    this.sizes.splice(0, this.sizes.length);
-                    for (let i = 35; i < 48; i++)
-                        this.sizes.push(i);
-                }
+                this.$emit('changePage', 'main');
             }
         }
     }
@@ -304,7 +273,7 @@
         margin: 10px;
         box-shadow: 0px 0px 4px rgba(.2,.2,.2,.2);
 
-        height: 780px;
+        height: 800px;
         padding-right: 70px;
         margin-left: 290px;
         /*padding: 15px;*/
@@ -390,5 +359,14 @@
         float: left;
         margin-top: 10px;
         margin-left: 20px;
+    }
+    .id_div {
+        text-align: center;
+        font-size: 20px;
+        width: 100%;
+        height: 30px;
+        padding-top: 20px;
+        margin-bottom: 5px;
+        font-weight: bold;
     }
 </style>
