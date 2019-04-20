@@ -3,12 +3,14 @@
 
         <div class="tools" id="fix">
                 <v-text-field
+                        v-model="search"
                         class="search"
                         placeholder="Search"
                         solo
                         clearable
                         height=""
                         append-icon="search"
+                        @keyup="searchByName()"
                 ></v-text-field>
             <v-combobox
 
@@ -22,15 +24,15 @@
             <div class="icons">
                 <button @click="add()" class="icon">
                     <v-icon medium color="black">add</v-icon>
-                    <div class="show_text">Додати</div>
+                    <div class="show_text" style="right: 153px;">Додати</div>
                 </button>
                 <button @click="deleteById()" class="icon" >
                     <v-icon medium color="black">remove</v-icon>
-                    <div class="show_text">Видалити</div>
+                    <div class="show_text" style="right: 78px;">Видалити</div>
                 </button>
                 <button @click="updateById()" class="icon">
                     <v-icon medium color="black">edit</v-icon>
-                    <div class="show_text">Редагувати</div>
+                    <div class="show_text" style="right: 5px;">Редагувати</div>
                 </button>
             </div>
         </div>
@@ -89,7 +91,8 @@
                 commodityPath: '/commodities',
                 commIsActive: false,
                 selectedIndex: null,
-                mas: []
+                mas: [],
+                search: ''
             }
         },
         props: {
@@ -175,6 +178,7 @@
                         method: 'get'
                     }).then((response) => (this.commodities = response.data));
                 }
+                //console.log('dfd');
             },
             fillCommodity(commodityData){
                 let z = 0;
@@ -254,6 +258,23 @@
                 }
 
             },
+            searchByName(){
+                //console.log(this.commodityPath);
+                let s = this.search;
+                if(s != '')
+                    axios.request({
+                            method: 'POST',
+                            url: "http://localhost:8080/fairy-trip"+ this.commodityPath + "/search",
+                            headers: {'Content-Type': "multipart/form-data"},
+                            transformRequest: function () {
+                                let formData = new FormData();
+                                formData.append("search", s);
+                                return formData;
+                            }
+                        }
+                    ).then((response) => (this.commodities = response.data));
+                else this.sendRequest();
+            }
         }
     }
 </script>
@@ -264,9 +285,11 @@
     .show_text {
         display: none;
         margin-top: 15px;
-        width: 70px;
-        margin-left: 20px;
-        height: 30px;
+        padding-left: 7px;
+        padding-right: 7px;
+        height: 20px;
+        background-color: #fafafa;
+        position: absolute;
         box-shadow: 0px 0px 4px rgba(.2,.2,.2,.2);
     }
 

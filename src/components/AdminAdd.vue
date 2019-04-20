@@ -213,6 +213,10 @@
                         }
                     }
                 }
+                let file = this.file;
+                if(file == null){
+                    isCorrect = false;
+                }
                 if(isCorrect) {
                     switch (this.select) {
                         case this.items[0]:
@@ -244,7 +248,7 @@
                     // eslint-disable-next-line
                     //console.log(data);
 
-                        let file = this.file;
+
                         axios.request({
 
                             method: 'POST',
@@ -257,8 +261,8 @@
                                 return formData;
                             }
                         }
-                    );
-                        this.$emit('changePage', 'main');
+                    ).then(() => { this.$emit('changePage', 'main')} );
+                        //this.$emit('changePage', 'main');
                 }else alert("Заповніть усі поля!");
             }
         },
