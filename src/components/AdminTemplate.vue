@@ -2,8 +2,8 @@
     <div >
         <header>
             <img width="300" src="../images/fairy_trip_logo.png" alt="logo"/>
-            <p class="admin">Admin</p>
-            <p class="logout">Вийти</p>
+            <p class="admin">{{ username }}</p>
+            <p class="logout" @click="logOut()">Вийти</p>
         </header>
         <admin-home @changeAddPage="page='add'"
                     @changeUpdatePage="page='update', path=$event"
@@ -65,6 +65,7 @@
     import Admin from './Admin';
     import AdminAdd from './AdminAdd';
     import AdminUpdate from './AdminUpdate'
+    import axios from 'axios'
     export default {
         data () {
             return {
@@ -83,9 +84,11 @@
                 select: 'Усі товари',
                 page: 'main',
                 path: '',
-                commodity: {}
+                commodity: {},
+                username: localStorage.getItem('login')
             }
         },
+
         components: {
             'admin-home': Admin,
             'admin-add': AdminAdd,
@@ -93,10 +96,55 @@
         },
 
         methods: {
+            logOut(){
+                this.$router.push('admin');
+            },
+            refresh(token) {
+                //alert(this.username);
+                //alert('klhlf');
+                axios.request({
+                    method: 'POST',
+                    url: 'http://localhost:8080/fairy-trip/admin/refresh_token',
+                    headers: {
+                        'Content-Type': "application/json",
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'privatekey': token
+                    },
+                    data: {login: this.username, password: this.password}
+                }).then((response) => {
+                    //console.log(response.data);
+                    // if(response.data) {
+                    const token = response.headers.privatekey;
+                    let expirationDate = new Date(response.headers.expirationdate);
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('expirationDate', expirationDate);
+                    let milliseconds = expirationDate.getTime();
+                    let currentmillis = new Date().getTime();
+                    console.log(token);
+                    console.log(expirationDate);
 
+                    setTimeout(() => {
+                        this.refresh(token)
+                    }, (milliseconds - currentmillis) - 3000);
+                    // }else {
+                    //     console.log(false);
+                    // }
+                });
+            }
         },
         watch: {
 
+        },
+        mounted() {
+            if(localStorage.getItem('token') != null) {
+                const token = localStorage.getItem('token');
+                let expirationDate = new Date(localStorage.getItem('expirationDate'));
+                let milliseconds = expirationDate.getTime();
+                let currentmillis = new Date().getTime();
+                setTimeout(() => {
+                    this.refresh(token)
+                }, ((milliseconds - currentmillis) - 3000));
+            }
         }
     }
 </script>

@@ -8,3 +8,4 @@ export const routes = [
     {path: '/admin_home', component: AdminTemplate}
 ];
 
+

@@ -13,6 +13,7 @@
                                 counter
                                 :rules="[rules.required]"
                                 prepend-icon="face"
+                                v-model="username"
                         ></v-text-field>
                     </div>
                     <label>Пароль</label>
@@ -30,7 +31,7 @@
                         ></v-text-field>
                     </div>
                     <div class="text-xs-center login-btn">
-                        <v-btn color="success" large>Увійти</v-btn>
+                        <v-btn color="success" large @click="signIn()">Увійти</v-btn>
                     </div>
 
                 </div>
@@ -42,11 +43,13 @@
 </template>
 
 <script>
+    import axios from 'axios'
     export default {
         data () {
             return {
                 currentHeight: '',
                 show: false,
+                username: '',
                 password: '',
                 rules: {
                     required: value => !!value || 'Обов\'язкове поле.',
@@ -61,8 +64,87 @@
             } else {
                 this.currentHeight = "100%"
             }
+            localStorage.removeItem('token');
+            localStorage.removeItem('login');
         },
+        methods:{
+            signIn(){
+                //this.$emit('admin_name', this.username);
+                localStorage.setItem('login', this.username);
+                axios.request({
+                        method: 'POST',
+                        url: "http://localhost:8080/fairy-trip/admin/check_admin" ,
+                        headers: {'Content-Type': "application/json", 'X-Requested-With': 'XMLHttpRequest'},
+                        data: {login: this.username, password: this.password}
+                    }
+                ).then((response) => {
+                    //console.log(response.status);
+                    if(response.data) {
 
+                        const token = response.headers.privatekey;
+                        let expirationDate = new Date(response.headers.expirationdate);
+                        //expirationDate = response.headers.expirationdate;
+                        //const refreshLink = response.headers.refreshlink;
+                        localStorage.setItem('token', token);
+                        localStorage.setItem('expirationDate', expirationDate);
+                        //localStorage.setItem('refreshLink', refreshLink);
+                        //var milliseconds = expirationDate.getTime();
+                        //var currentmillis= new Date().getTime();
+                        this.$router.push('admin_home');
+                        console.log(token);
+                        console.log(expirationDate);
+                        // const self = this;
+                        // //this.$emit('refreshToken', token, refreshLink);
+                        // setTimeout(() => {
+                        //     self.$emit('refreshToken', token);
+                        // }, (3000));
+                        //setTimeout(() => {this.refresh(token, refreshLink)}, (milliseconds - currentmillis)/2);
+
+
+                    }else {
+                        console.log(false);
+                    }
+                } ).catch(function(error) {
+                    if (error.response && error.response.status == 401) {
+                        //console.log(error.response.data);
+                        alert("Невірний логін або пароль!");
+
+                    } else {
+                        //console.log(error);
+                        // Handle error however you want
+                    }}
+
+                );
+
+            },
+            // refresh(token, refreshLink){
+            //     //alert('kkkdg');
+            //     axios.request({
+            //         method: 'POST',
+            //         url: 'http://localhost:8080/fairy-trip/admin' + refreshLink,
+            //         headers: {'Content-Type': "application/json", 'X-Requested-With': 'XMLHttpRequest', 'privatekey': token},
+            //         data: {login: this.username, password: this.password}
+            //     }).then((response) => {
+            //         //console.log(response.data);
+            //         // if(response.data) {
+            //         const token = response.headers.privatekey;
+            //         let expirationDate = new Date(response.headers.expirationdate);
+            //         localStorage.setItem('token', token);
+            //         let milliseconds = expirationDate.getTime();
+            //         let currentmillis= new Date().getTime();
+            //         console.log(token);
+            //         console.log(expirationDate);
+            //         this.$parent.refresh;
+            //         //setTimeout(() => {this.refresh(token, refreshLink)}, ((milliseconds - currentmillis)/2));
+            //         // }else {
+            //         //     console.log(false);
+            //         // }
+            //     });
+            //     //}
+            //     //console.log(token);
+            //     //console.log(Date());
+            // }
+        }
     }
 </script>
 

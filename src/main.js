@@ -17,6 +17,16 @@ const router = new VueRouter({
   routes,
   mode: 'history'
 });
+router.beforeEach((to, from, next) => {
+  if(to.path == '/admin_home'){
+    if(localStorage.getItem('login') == 'admin6'){
+      next();
+    }
+    else
+      return false;
+  }
+  next();
+});
 Vue.config.productionTip = false;
 
 new Vue({

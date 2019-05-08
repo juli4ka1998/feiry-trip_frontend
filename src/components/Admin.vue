@@ -75,11 +75,11 @@
                     {title: 'Усі товари', path: '/commodities'},
                     {title: 'Взуття', path: '/shoes'},
                     {title: 'Одяг', path: '/clothes'},
-                    {title: 'Палатки', path: '/tents'},
+                    {title: 'Палатки', path: '/tent'},
                     {title: 'Спальні мішки', path: '/sleeping_bag'},
                     {title: 'Посуд', path: '/dishes'},
                     {title: 'Харчування', path: '/food'},
-                    {title: 'Рюкзаки', path: '/backpacks'},
+                    {title: 'Рюкзаки', path: '/backpack'},
                     {title: 'Спорядження', path: '/equipment'}
                 ],
                 right: null,
@@ -163,18 +163,49 @@
                 }
             },
             sendRequest() {
+                const token = localStorage.getItem('token');
+               // const expDate = localStorage.getItem('expirationDate');
+                //if(expDate <= Date()){
+                //     axios({
+                //         url: 'http://localhost:8080/fairy-trip/admin/refresh_token',
+                //         headers: {'privatekey': token},
+                //         method: 'post'
+                //     }).then((response) => { if(response.data) {
+                //         const token = response.headers.privatekey;
+                //         const expirationDate = response.headers.expirationdate;
+                //         //const refreshLink = response.headers.refreshlink;
+                //         localStorage.setItem('token', token);
+                //         localStorage.setItem('expirationDate', expirationDate);
+                //         //localStorage.setItem('refreshLink', refreshLink);
+                //         console.log(response.data);
+                //         this.$router.push('admin_home')
+                //     }else {
+                //         console.log(false);
+                //     }});
+                // //}
+                // console.log(token);
+                // console.log(Date());
+               // console.log(expDate);
                 if(this.select.title == this.items[0].title)
                     this.commodityPath = this.items[0].path;
                 if(this.commodityPath == '/commodities'){
                     axios({
                         url: 'http://localhost:8080/fairy-trip' + this.commodityPath,
+                        headers: {'privatekey': token},
                         method: 'get'
-                    }).then((response) => ( this.commodities = this.fillCommodity(response.data)));
+                    }).then((response) => ( this.commodities = this.fillCommodity(response.data)))
+                      .catch((error) => {
+                          console.log(error);
+                          localStorage.removeItem('token');
+                          this.$router.push('admin');
+                      })
+                    ;
 
                 }
                 else {
                     axios({
                         url: 'http://localhost:8080/fairy-trip' + this.commodityPath,
+                        headers: {'privatekey': token},
                         method: 'get'
                     }).then((response) => (this.commodities = response.data));
                 }
@@ -247,9 +278,11 @@
                                     this.commodityPath = this.items[i].path;
                             }
                         }
+                        const token = localStorage.getItem('token');
                         //console.log(id + ' ' + this.commodityPath);
                         axios({
                             url: 'http://localhost:8080/fairy-trip' + this.commodityPath + "/" + id,
+                            headers: {'privatekey': token},
                             method: 'delete'
                         }).then((response) => {
                             console.log(response), this.sendRequest();
@@ -261,11 +294,12 @@
             searchByName(){
                 //console.log(this.commodityPath);
                 let s = this.search;
-                if(s != '')
+                if(s != '') {
+                    const token = localStorage.getItem('token');
                     axios.request({
                             method: 'POST',
-                            url: "http://localhost:8080/fairy-trip"+ this.commodityPath + "/search",
-                            headers: {'Content-Type': "multipart/form-data"},
+                            url: "http://localhost:8080/fairy-trip" + this.commodityPath + "/search",
+                            headers: {'Content-Type': "multipart/form-data", 'privatekey': token},
                             transformRequest: function () {
                                 let formData = new FormData();
                                 formData.append("search", s);
@@ -273,7 +307,7 @@
                             }
                         }
                     ).then((response) => (this.commodities = response.data));
-                else this.sendRequest();
+                }else this.sendRequest();
             }
         }
     }

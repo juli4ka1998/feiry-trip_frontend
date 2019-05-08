@@ -248,12 +248,11 @@
                     // eslint-disable-next-line
                     //console.log(data);
 
-
-                        axios.request({
-
+                    const token = localStorage.getItem('token');
+                    axios.request({
                             method: 'POST',
                             url: "http://localhost:8080/fairy-trip" + path,
-                            headers: {'Content-Type': "multipart/form-data"},
+                            headers: {'Content-Type': "multipart/form-data", 'privatekey': token},
                             transformRequest: function () {
                                 let formData = new FormData();
                                 formData.append("json", JSON.stringify(data));

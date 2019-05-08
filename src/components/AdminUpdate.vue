@@ -5,7 +5,7 @@
             <div class="image" @click="$refs.inputUpload.click()">
                 <input v-show="false" ref="inputUpload" type="file" accept=".jpg, .jpeg, .png" @change="onFileChange" />
                 <img width="300" height="200" v-if="url" :src="url" />
-                <p style="text-align: center; margin-top: 80px; font-size: 16px" v-else>Оберіть ghhgjg зображення</p>
+                <p style="text-align: center; margin-top: 80px; font-size: 16px" v-else>Оберіть зображення</p>
             </div>
             <div class="important">
                 <label>Назва товару: </label>
@@ -135,11 +135,11 @@
                     {title: 'Усі товари', path: '/commodities'},
                     {title: 'Взуття', path: '/shoes'},
                     {title: 'Одяг', path: '/clothes'},
-                    {title: 'Палатки', path: '/tents'},
+                    {title: 'Палатки', path: '/tent'},
                     {title: 'Спальні мішки', path: '/sleeping_bag'},
                     {title: 'Посуд', path: '/dishes'},
                     {title: 'Харчування', path: '/food'},
-                    {title: 'Рюкзаки', path: '/backpacks'},
+                    {title: 'Рюкзаки', path: '/backpack'},
                     {title: 'Спорядження', path: '/equipment'}
                 ],
                 commodity_data: {
@@ -216,10 +216,11 @@
                 }
                  if(isCorrect) {
                      let file = this.file;
+                     const token = localStorage.getItem('token');
                      axios.request({
                          method: 'PUT',
                          url: "http://localhost:8080/fairy-trip" + this.updatedPath + "/" + this.updatedCommodity.id,
-                         headers: {'Content-Type': "multipart/form-data"},
+                         headers: {'Content-Type': "multipart/form-data", 'privatekey': token},
                              transformRequest: function () {
                                  let formData = new FormData();
                                  formData.append("json", JSON.stringify(data));
