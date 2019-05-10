@@ -18,7 +18,7 @@ const router = new VueRouter({
   mode: 'history'
 });
 router.beforeEach((to, from, next) => {
-  if(to.path == '/admin_home'){
+  if(to.path == '/fairytrip/admin_home'){
     if(localStorage.getItem('login') == 'admin6'){
       next();
     }
