@@ -5,7 +5,11 @@
             <div class="image" @click="$refs.inputUpload.click()">
                 <input v-show="false" ref="inputUpload" type="file" accept=".jpg, .jpeg, .png" @change="onFileChange" />
                 <img width="200" height="200" v-if="url" :src="url" />
+<<<<<<< HEAD
                 <p style="text-align: center; margin-top: 80px; font-size: 16px" v-else>Завантажити фото</p>
+=======
+                <p style="text-align: center; margin-top: 80px; font-size: 16px" v-else>Завантажити gфото</p>
+>>>>>>> Create registration page
             </div>
             <h1 style="text-align: center; margin-top: 20px; margin-bottom: 20px">Реєстрація</h1>
             <div style="text-align: center; font-style: italic; font-size: 18px">Зареєструйтеся на нашому сайті, щоб мати змогу робити замовлення.</div>
