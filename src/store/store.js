@@ -9,7 +9,8 @@ export const store = new Vuex.Store({
 		selectedItem: {
 			title:'Взуття'
 		},
-		commodityData: {}
+		commodityData: {},
+		photo: ''
 	},
 	getters: {
 		// activePage: state => {
@@ -23,7 +24,10 @@ export const store = new Vuex.Store({
 		},
 		commodityData: state => {
 			return state.commodityData;
-		}
+		},
+		photo: state => {
+			return state.photo;
+		},
 	},
 	mutations: {
 		// homePage: state => {
@@ -41,7 +45,10 @@ export const store = new Vuex.Store({
 		},
 		changeData: (state, data) => {
 			state.commodityData = data;
-		}
+		},
+		changePhoto: (state, value) => {
+			state.photo = value
+		},
 	},
 	actions: {
 		// homePage: ({ commit }) => {
@@ -58,6 +65,9 @@ export const store = new Vuex.Store({
 		},
 		changeData: ({ commit }, data) => {
 			commit('changeData', data);
-		}
+		},
+		changePhoto: ({ commit }, value) => {
+			commit('changePhoto', value);
+		},
 	}
 });

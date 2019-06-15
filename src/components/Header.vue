@@ -4,8 +4,8 @@
             <v-menu offset-y>
                 <template v-slot:activator="{ on }">
                     <div style="float: right; margin-left: 50px; margin-top: 25px; text-align: center; font-size: 12px; margin-right: 20px">
-                        <p style="margin-bottom: 8px; cursor: pointer; font-weight: bold">Увійти в кабінет</p>
-                        <p @click="$router.replace('/fairytrip/registration')" style="margin-bottom: 0px; cursor: pointer">Реєстрація</p>
+                        <p @click="login" style="margin-bottom: 8px; cursor: pointer; font-weight: bold">{{ email }}</p>
+                        <p @click="register" style="margin-bottom: 0px; cursor: pointer">{{ registration }}</p>
                     </div>
 
                     <v-btn
@@ -69,26 +69,49 @@
               {title: 'Харчування', path: 'food'},
               {title: 'Рюкзаки', path: 'backpack'},
               {title: 'Спорядження', path: 'equipment'}
-			]
+			],
+            email: 'Увійти в кабінет',
+            registration: 'Реєстрація'
 		}),
 		methods: {
-			// ...mapActions([
-			// 	'homePage',
-			// 	'commoditiesPage'
-			// ])
             changePage(item){
                this.$store.dispatch('changeItem', item);
-               this.$router.replace('/fairytrip/' + item.path);
+               this.$router.push('/fairytrip/' + item.path);
 
+            },
+            register(){
+                let login = localStorage.getItem('login');
+                if(login != null) {
+                    localStorage.removeItem('login');
+                    this.$router.push('/fairytrip/login');
+                }
+                else {
+                    this.$router.push('/fairytrip/registration');
+                }
+            },
+            login(){
+                let login = localStorage.getItem('login');
+                if(login != null) {
+                    this.$router.push('/fairytrip/user')
+                }
+                else {
+                    this.$router.push('/fairytrip/login');
+                }
             }
-		}
-	}
+		},
+		mounted() {
+            let login = localStorage.getItem('login');
+            if(login != null) {
+                this.email = login;
+                this.registration = 'Вийти';
+            }
+        }
+    }
 </script>
 
 <style scoped>
     header {
         margin: 10px;
-        /*background-color: #55d5fe;*/
         background:-webkit-gradient(radial, 5 0, 100, 450 171, 590, from(#55D6FE), to(#FFFFFF));
         box-shadow: 0px 0px 4px rgba(.2,.2,.2,.2);
         height: 101px;

@@ -1,7 +1,7 @@
 <template>
     <div class="right_section" id="fix_section">
         <v-flex xs12>
-            <v-card color="white" class="black--text" height="150px">
+            <v-card color="white" class="black--text" height="150px" @click="login">
                 <v-layout row>
                     <v-flex xs7>
                         <v-card-title primary-title>
@@ -13,7 +13,7 @@
                     </v-flex>
                     <v-flex xs5 >
                         <v-img style="margin-right: 10px"
-                               :src="require('../images/nobody.jpg')"
+                               :src="src"
                                height="125px"
                                contain
                         ></v-img>
@@ -54,17 +54,44 @@
 </template>
 
 <script>
+	import axios from 'axios'
 	export default {
         data: () => ({
             name: 'Власний кабінет',
             orders: 'Увійдіть, щоб зробити замовлення.',
+            src: require('../images/nobody.jpg'),
             url_1: "http://localhost:8080" + JSON.parse(localStorage.getItem('comm-1')).imagePath,
             url_2: "http://localhost:8080" + JSON.parse(localStorage.getItem('comm-2')).imagePath,
 
         }),
         mounted() {
+          let login = localStorage.getItem('login');
+          if(login != null){
+            let qs = require('qs');
+            axios.request({
+                method: 'POST',
+                url: "http://localhost:8080/fairy-trip/user" ,
+                headers: {'Content-Type': "application/x-www-form-urlencoded", 'X-Requested-With': 'XMLHttpRequest'},
+                data: qs.stringify({email: login})
+              }
+            ).then((response) => {
+              //console.log(response.data);
+              this.name = response.data.name + ' ' + response.data.lastname;
+              this.orders = 'Мої замовлення';
+              this.src = "http://localhost:8080" + response.data.photoPath;
+            });
+          }
         },
         methods: {
+            login (){
+                let login = localStorage.getItem('login');
+                if(login != null) {
+                    this.$router.push('/fairytrip/user')
+                }
+                else {
+                    this.$router.push('/fairytrip/login');
+                }
+            }
         }
     }
 </script>

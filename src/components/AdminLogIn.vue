@@ -90,7 +90,7 @@
                         //localStorage.setItem('refreshLink', refreshLink);
                         //var milliseconds = expirationDate.getTime();
                         //var currentmillis= new Date().getTime();
-                        this.$router.push('admin_home');
+                        this.$router.push('/fairytrip/adminHome');
                         console.log(token);
                         console.log(expirationDate);
                         // const self = this;

@@ -6,6 +6,12 @@ import {routes} from './routes'
 import Vuetify from 'vuetify'
 import colors from 'vuetify/es5/util/colors'
 import { store } from './store/store'
+import VueCroppie from 'vue-croppie';
+import 'croppie/croppie.css'
+import VueJquery from 'vue-jquery'
+
+Vue.use(VueJquery);
+Vue.use(VueCroppie);
 Vue.use(VueRouter);
 Vue.use(Vuetify, {
   theme: {

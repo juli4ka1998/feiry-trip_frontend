@@ -11,6 +11,7 @@
                             :src="picture.src"
                             reverse-transition="fade"
                             transition="fade"
+                            @click="changePage(picture)"
 
                     >
                         <div style="color: white; text-align: center; font-size: 30px;text-shadow: 2px 2px 2px black;">{{ items[i].title}}</div>
@@ -55,14 +56,14 @@
     export default {
       data: () => ({
         items: [
-          { title: 'Взуття', src:  shoes_picture},
-          { title: 'Одяг', src:  clothes_picture},
-          { title: 'Палатки', src:  tent_picture},
-          { title: 'Спальні мішки', src:  sleeping_bag_picture},
-          { title: 'Посуд', src:  dishes_picture},
-          { title: 'Харчування', src:  food_picture},
-          { title: 'Рюкзаки', src:  backpack_picture},
-          { title: 'Спорядження', src:  equipment_picture},
+          { title: 'Взуття', src:  shoes_picture, path: 'shoes'},
+          { title: 'Одяг', src:  clothes_picture, path: 'clothes'},
+          { title: 'Палатки', src:  tent_picture, path: 'tent'},
+          { title: 'Спальні мішки', src:  sleeping_bag_picture, path: 'sleeping_bag'},
+          { title: 'Посуд', src:  dishes_picture, path: 'dishes'},
+          { title: 'Харчування', src:  food_picture, path: 'food'},
+          { title: 'Рюкзаки', src:  backpack_picture, path: 'backpack'},
+          { title: 'Спорядження', src:  equipment_picture, path: 'equipment'},
         ],
       }),
         components: {
@@ -83,6 +84,13 @@
       },
       mounted() {
 
+      },
+      methods: {
+        changePage(item){
+          this.$store.dispatch('changeItem', item);
+          this.$router.push('/fairytrip/' + item.path);
+
+        }
       }
     }
 </script>
@@ -100,6 +108,7 @@
     .slides {
         /*margin: 0 auto;*/
         margin-bottom: 30px;
+        cursor: pointer;
     }
     .main_content {
         float: left;
