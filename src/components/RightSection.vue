@@ -60,11 +60,17 @@
             name: 'Власний кабінет',
             orders: 'Увійдіть, щоб зробити замовлення.',
             src: require('../images/nobody.jpg'),
-            url_1: "http://localhost:8080" + JSON.parse(localStorage.getItem('comm-1')).imagePath,
-            url_2: "http://localhost:8080" + JSON.parse(localStorage.getItem('comm-2')).imagePath,
+            url_1: '',
+            url_2: '',
 
         }),
         mounted() {
+          let comm_1 = localStorage.getItem('comm-1');
+          let comm_2 = localStorage.getItem('comm-2');
+          if(comm_1 && comm_2) {
+            this.url_1 = "http://localhost:8080" + JSON.parse(comm_1).imagePath;
+            this.url_2 = "http://localhost:8080" + JSON.parse(comm_2).imagePath;
+          }
           let login = localStorage.getItem('login');
           if(login != null){
             let qs = require('qs');

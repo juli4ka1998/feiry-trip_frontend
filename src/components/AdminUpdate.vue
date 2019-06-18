@@ -4,7 +4,7 @@
             <div class="id_div">ID: {{ updatedCommodity.id }}</div>
             <div class="image" @click="$refs.inputUpload.click()">
                 <input v-show="false" ref="inputUpload" type="file" accept=".jpg, .jpeg, .png" @change="onFileChange" />
-                <img width="300" height="200" v-if="url" :src="url" />
+                <img width="200" height="200" v-if="url" :src="url" />
                 <p style="text-align: center; margin-top: 80px; font-size: 16px" v-else>Оберіть зображення</p>
             </div>
             <div class="important">
@@ -283,7 +283,7 @@
         height: 915px;
     }
     .image {
-        width: 303px;
+        width: 203px;
         height: 203px;
         border: 1.5px #55d5fe solid;
         box-shadow: 0px 0px 4px rgba(.2,.2,.2,.2);

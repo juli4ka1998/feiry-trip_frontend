@@ -44,7 +44,7 @@
                     <p>{{ commodity.id }}</p>
                 </div>
                 <div class="commodity_img">
-                    <img width="120" height="80" :src="'http://localhost:8080' + commodity.imagePath" />
+                    <img width="80" height="80" :src="'http://localhost:8080' + commodity.imagePath" />
                 </div>
                 <div class="commodity_title">
                     <p>Назва товару: {{ commodity.name }}</p>
@@ -57,7 +57,7 @@
                     <p>Ціна: {{ commodity.price }} грн.</p>
                 </div>
                 <div class="commodity_characteristic">
-                    <p>Опис: {{ commodity.characteristic }}</p>
+                    <p>Опис:{{ (commodity.characteristic.length > 160)? commodity.characteristic.substr(0, 160) + '...' : commodity.characteristic  }}</p>
                 </div>
             </div>
         </div>
@@ -414,7 +414,7 @@
         margin-left: 20px;
         float: left;
         color: black;
-        width: 250px;
+        width: 30%;
     }
     .commodity_brand {
         /*display: inline-block;*/
@@ -427,7 +427,7 @@
         margin-left: 50px;
         float: left;
         color: black;
-        width: 150px;
+        width: 20%;
     }
     .commodity_characteristic {
         font-size: 15px;
@@ -436,7 +436,7 @@
         float: left;
         color: black;
         height: 60px;
-        width: 450px;
+        width: 30%;
         /*border: 1px black solid;*/
 
     }
